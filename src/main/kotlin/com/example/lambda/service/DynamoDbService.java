@@ -16,9 +16,9 @@ public class DynamoDbService {
 
   private final DynamoDbClient client = DynamoDbClient.builder().region(Region.EU_CENTRAL_1).build();
 
-  public String getEntity(String tableName, String layerId) throws JsonProcessingException {
+  public String getEntity(String tableName, String key) throws JsonProcessingException {
     Map<String, AttributeValue> keyToGet = new HashMap<>();
-    keyToGet.put("key", AttributeValue.builder().s(layerId).build());
+    keyToGet.put("key", AttributeValue.builder().s(key).build());
 
     GetItemRequest request = GetItemRequest.builder()
         .key(keyToGet)
@@ -38,7 +38,7 @@ public class DynamoDbService {
     ObjectMapper objectMapper = new ObjectMapper();
     Map<String, String> attributeValues = new HashMap<>();
     for (String key : entity.keySet()) {
-      attributeValues.put(key, attributeValues.get(key));
+      attributeValues.put(key, entity.get(key).s());
     }
     return objectMapper.writeValueAsString(attributeValues);
   }

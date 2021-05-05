@@ -39,7 +39,7 @@ public class LambdaRequestHandler implements RequestStreamHandler {
     }
 
     public static void main(String[] args) throws IOException {
-        String input = "{ \"path\": \"/objectName/1\", \"httpMethod\": \"GET\" }";
+        String input = "{ \"path\": \"/objectName/someKey\", \"httpMethod\": \"GET\" }";
         new LambdaRequestHandler().handleRequest(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)), System.out, new MockLambdaContext());
     }
 }
