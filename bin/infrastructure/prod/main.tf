@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket  = "terraform-backend-prod"
+    bucket  = "terraform-state-s3-backend-prod"
     key     = "services/aws-lambda-rest-api-service"
     region  = "eu-central-1"
   }

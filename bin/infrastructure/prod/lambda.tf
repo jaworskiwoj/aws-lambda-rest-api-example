@@ -58,23 +58,3 @@ resource "aws_cloudwatch_log_metric_filter" "metric_filter" {
     default_value = "0"
   }
 }
-
-
-resource "aws_cloudwatch_event_rule" "warm_lambda" {
-  name = "${var.component}-${var.environment}-warm-lambda"
-  schedule_expression = "rate(4 minutes)"
-}
-
-resource "aws_cloudwatch_event_target" "check_at_rate" {
-  rule = aws_cloudwatch_event_rule.warm_lambda.name
-  arn = aws_lambda_function.aws-lambda-rest-api.arn
-  input = "{ \"path\": \"/objectName/1\", \"httpMethod\": \"GET\" }"
-}
-
-resource "aws_lambda_permission" "cloudwatch_call_lambda" {
-  statement_id = "AllowExecutionFromCloudWatch"
-  action = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.aws-lambda-rest-api.arn
-  principal = "events.amazonaws.com"
-  source_arn = aws_cloudwatch_event_rule.warm_lambda.arn
-}

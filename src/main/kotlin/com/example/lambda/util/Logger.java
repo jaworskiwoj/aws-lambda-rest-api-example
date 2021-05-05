@@ -16,7 +16,6 @@ public class Logger {
         } else {
             System.out.println(log);
         }
-
     }
 
 }
