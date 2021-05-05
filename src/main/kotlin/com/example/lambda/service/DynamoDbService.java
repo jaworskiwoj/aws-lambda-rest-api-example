@@ -1,8 +1,8 @@
 package com.example.lambda.service;
 
-import com.example.lambda.util.Environment;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.example.lambda.util.JsonAttributeValueUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -14,11 +14,9 @@ import java.util.*;
 
 public class DynamoDbService {
 
-  private final JsonAttributeValueUtil jsonAttributeValueUtil = new JsonAttributeValueUtil();
-  private final DynamoDbClient client = DynamoDbClient.builder().region(Region.of(new Environment().getProperty("aws.region"))).build();
+  private final DynamoDbClient client = DynamoDbClient.builder().region(Region.EU_CENTRAL_1).build();
 
-
-  public String getEntity(String tableName, String layerId) {
+  public String getEntity(String tableName, String layerId) throws JsonProcessingException {
     Map<String, AttributeValue> keyToGet = new HashMap<>();
     keyToGet.put("key", AttributeValue.builder().s(layerId).build());
 
@@ -30,23 +28,40 @@ public class DynamoDbService {
     Map<String, AttributeValue> entity = client.getItem(request).item();
 
     if (entity != null && !entity.isEmpty()) {
-      return jsonAttributeValueUtil.fromAttributeValue(entity).toString();
+      return convertToJson(entity);
     } else {
       return null;
     }
   }
 
+  private String convertToJson(Map<String, AttributeValue> entity) throws JsonProcessingException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    Map<String, String> attributeValues = new HashMap<>();
+    for (String key : entity.keySet()) {
+      attributeValues.put(key, attributeValues.get(key));
+    }
+    return objectMapper.writeValueAsString(attributeValues);
+  }
 
-  public String saveEntity(String tableName, JsonNode entity) {
+
+  public String saveEntity(String tableName, JsonNode entity) throws JsonProcessingException {
+    Map<String, AttributeValue> attributeValues = new HashMap<>();
+    Iterator<String> fieldNames = entity.fieldNames();
+    while (fieldNames.hasNext()) {
+      String fieldName = fieldNames.next();
+      attributeValues.put(fieldName, AttributeValue.builder().s(entity.findValue(fieldName).asText()).build());
+    }
+
+
     PutItemRequest request = PutItemRequest.builder()
-        .item(jsonAttributeValueUtil.toAttributeValues(entity))
+        .item(attributeValues)
         .tableName(tableName)
         .build();
 
     PutItemResponse response = client.putItem(request);
 
     if (response != null && !response.attributes().isEmpty()) {
-      return jsonAttributeValueUtil.fromAttributeValue(response.attributes()).toString();
+      return convertToJson(response.attributes());
     } else {
       return null;
     }

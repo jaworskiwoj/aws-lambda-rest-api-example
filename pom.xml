@@ -5,9 +5,9 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <name>aws-lambda-rest-api-example</name>
+    <name>aws-lambda-rest-api</name>
     <groupId>com.example</groupId>
-    <artifactId>aws-lambda-rest-api-example</artifactId>
+    <artifactId>aws-lambda-rest-api</artifactId>
     <version>1.0.0</version>
 
     <properties>
@@ -120,7 +120,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.example.lambda.controller.LambdaRequestHandlerKt</mainClass>
+                            <mainClass>com.example.lambda.controller.LambdaRequestHandler</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
